@@ -25,8 +25,26 @@ const logStream = createStream((time, index) => {
   path: './src/logs',
 });
 
+// Trust proxy (needed when behind Cloudflare / reverse proxy)
+app.set('trust proxy', true);
+
+// Resolve real client IP:
+// 1. CF-Connecting-IP (Cloudflare's injected real visitor IP)
+// 2. X-Forwarded-For first entry
+// 3. Fallback to socket remote address
+app.use((req, _res, next) => {
+  req.clientIp =
+    req.headers['cf-connecting-ip'] ??
+    req.headers['x-forwarded-for']?.split(',')[0].trim() ??
+    req.socket.remoteAddress;
+  next();
+});
+
+// Custom morgan token that uses resolved clientIp
+morgan.token('client-ip', (req) => req.clientIp);
+
 // Log to file (combined) + console (dev)
-app.use(morgan('combined', { stream: logStream }));
+app.use(morgan(':client-ip - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"', { stream: logStream }));
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // Rate limit: max 5 uploads per IP per hour
@@ -35,7 +53,7 @@ const uploadRateLimit = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => req.ip,
+  keyGenerator: (req) => req.clientIp,
   message: { error: 'Too many uploads from this IP, please try again after 1 hour.' },
 });
 
