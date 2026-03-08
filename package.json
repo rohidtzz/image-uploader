@@ -1,0 +1,28 @@
+{
+  "name": "storage-api",
+  "version": "1.0.0",
+  "description": "Public file storage API — upload anything, get a URL back.",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "author": "iya ini rohidtzz",
+  "license": "ISC",
+  "imports": {
+    "#services/*": "./src/services/*",
+    "#middleware/*": "./src/middleware/*"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^5.2.1",
+    "express-rate-limit": "^7.5.0",
+    "multer": "^1.4.5-lts.1",
+    "@aws-sdk/client-s3": "^3.779.0"
+
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
