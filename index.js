@@ -34,17 +34,6 @@ app.post('/upload', uploadMiddleware, (req, res) => {
   });
 });
 
-// DELETE /upload/:key — delete a file from storage
-app.delete('/upload/*key', async (req, res, next) => {
-  try {
-    const { remove } = await import('#services/storage.js');
-    await remove(req.params.key);
-    res.json({ ok: true });
-  } catch (err) {
-    next(err);
-  }
-});
-
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 app.use(errorHandler);
 

@@ -1,7 +1,6 @@
 import {
   S3Client,
   PutObjectCommand,
-  DeleteObjectCommand,
   ListObjectsV2Command,
 } from '@aws-sdk/client-s3';
 import { randomBytes } from 'crypto';
@@ -55,13 +54,6 @@ export const list = async () => {
     size: obj.Size,
     lastModified: obj.LastModified,
   }));
-};
-
-/**
- * Delete a file from storage by key.
- */
-export const remove = async (key) => {
-  await s3.send(new DeleteObjectCommand({ Bucket: BUCKET, Key: key }));
 };
 
 export default s3;
