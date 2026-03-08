@@ -15,12 +15,13 @@
     "#middleware/*": "./src/middleware/*"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.779.0",
     "dotenv": "^16.4.7",
     "express": "^5.2.1",
     "express-rate-limit": "^7.5.0",
+    "morgan": "^1.10.1",
     "multer": "^1.4.5-lts.1",
-    "@aws-sdk/client-s3": "^3.779.0"
-
+    "rotating-file-stream": "^3.2.9"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

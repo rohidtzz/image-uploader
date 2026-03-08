@@ -17,7 +17,7 @@ const s3 = new S3Client({
 });
 
 const BUCKET = process.env.AWS_BUCKET;
-const PUBLIC_URL = process.env.AWS_PUBLIC_URL?.replace(/\/$/, '');
+const PUBLIC_URL = `${process.env.AWS_ENDPOINT?.replace(/\/$/, '')}/${BUCKET}`;
 
 /**
  * Upload a buffer to S3-compatible storage.

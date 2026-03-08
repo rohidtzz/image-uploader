@@ -1,2 +1,5 @@
 node_modules/
 .env
+
+# Ignore log contents but keep the folder (tracked via .gitkeep)
+src/logs/*.log
