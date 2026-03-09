@@ -93,7 +93,12 @@ app.get('/', async (req, res, next) => {
   <title>File Gallery</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: sans-serif; background: #f4f4f5; color: #18181b; padding: 2rem; }
+    body { font-family: sans-serif; background: #f4f4f5; color: #18181b; }
+    nav { background: #fff; border-bottom: 1px solid #e4e4e7; padding: .75rem 2rem; display: flex; align-items: center; gap: 1.5rem; }
+    nav .brand { font-weight: 700; font-size: 1rem; color: #18181b; text-decoration: none; }
+    nav a { font-size: .875rem; color: #71717a; text-decoration: none; }
+    nav a:hover, nav a.active { color: #6366f1; }
+    main { padding: 2rem; }
     h1 { margin-bottom: 1.5rem; font-size: 1.5rem; }
     table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
     th { background: #e4e4e7; padding: .6rem 1rem; text-align: left; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; }
@@ -106,11 +111,19 @@ app.get('/', async (req, res, next) => {
   </style>
 </head>
 <body>
-  <h1>Files (${allowed.length})</h1>
-  <table>
-    <thead><tr><th></th><th>Key</th><th>Type</th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table>
+  <nav>
+    <a class="brand" href="/">Storage API</a>
+    <a href="/" class="active">Gallery</a>
+    <a href="/docs">Docs & Upload</a>
+    <a href="/upload">JSON</a>
+  </nav>
+  <main>
+    <h1>Files (${allowed.length})</h1>
+    <table>
+      <thead><tr><th></th><th>Key</th><th>Type</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </main>
 </body>
 </html>`);
   } catch (err) {
@@ -139,10 +152,15 @@ app.get('/docs', (req, res) => {
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Storage API \u2014 Docs</title>
+  <title>Storage API — Docs</title>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:sans-serif;background:#f4f4f5;color:#18181b;padding:2rem;max-width:860px;margin:0 auto}
+    body{font-family:sans-serif;background:#f4f4f5;color:#18181b}
+    nav{background:#fff;border-bottom:1px solid #e4e4e7;padding:.75rem 2rem;display:flex;align-items:center;gap:1.5rem}
+    nav .brand{font-weight:700;font-size:1rem;color:#18181b;text-decoration:none}
+    nav a{font-size:.875rem;color:#71717a;text-decoration:none}
+    nav a:hover,nav a.active{color:#6366f1}
+    main{padding:2rem;max-width:860px;margin:0 auto}
     h1{font-size:1.6rem;margin-bottom:.25rem}
     .sub{color:#71717a;margin-bottom:2rem;font-size:.9rem}
     h2{font-size:1.1rem;margin:2rem 0 .75rem;border-bottom:1px solid #e4e4e7;padding-bottom:.4rem}
@@ -157,8 +175,7 @@ app.get('/docs', (req, res) => {
     .card{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:1.5rem;margin-bottom:1.5rem}
     .form-group{margin-bottom:1rem}
     label{display:block;font-size:.85rem;font-weight:600;margin-bottom:.35rem}
-    input[type=file],input[type=password]{width:100%;padding:.5rem .75rem;border:1px solid #d4d4d8;border-radius:6px;font-size:.9rem;background:#fff}
-    input[type=password]{font-family:monospace}
+    input[type=file]{width:100%;padding:.5rem .75rem;border:1px solid #d4d4d8;border-radius:6px;font-size:.9rem;background:#fff}
     button{background:#6366f1;color:#fff;border:none;padding:.6rem 1.4rem;border-radius:6px;font-size:.9rem;cursor:pointer;font-weight:600}
     button:hover{background:#4f46e5}
     .alert{padding:.75rem 1rem;border-radius:6px;margin-bottom:1.25rem;font-size:.875rem;line-height:1.6}
@@ -166,14 +183,18 @@ app.get('/docs', (req, res) => {
     .alert.err{background:#fee2e2;color:#991b1b}
     .alert code{background:rgba(0,0,0,.08)}
     a{color:#6366f1}
-    nav{margin-bottom:2rem;font-size:.875rem}
-    nav a{margin-right:1rem}
   </style>
 </head>
 <body>
-  <h1>Storage API</h1>
-  <p class="sub">Upload file ke MinIO, dapat URL langsung.</p>
-  <nav><a href="/">\u2190 Gallery</a><a href="/upload">JSON List</a></nav>
+  <nav>
+    <a class="brand" href="/">Storage API</a>
+    <a href="/">Gallery</a>
+    <a href="/docs" class="active">Docs & Upload</a>
+    <a href="/upload">JSON</a>
+  </nav>
+  <main>
+    <h1>Storage API</h1>
+    <p class="sub">Upload file ke MinIO, dapat URL langsung.</p>
 
   ${alert}
 
@@ -192,7 +213,7 @@ app.get('/docs', (req, res) => {
 
   <div class="card">
     <h3>GET /</h3>
-    <p>Gallery HTML \u2014 menampilkan semua gambar dan PDF yang sudah diupload.</p>
+    <p>Gallery HTML — menampilkan semua gambar dan PDF yang sudah diupload.</p>
   </div>
 
   <div class="card">
@@ -242,6 +263,7 @@ app.get('/docs', (req, res) => {
       </tbody>
     </table>
   </div>
+  </main>
 </body>
 </html>`);
 });
