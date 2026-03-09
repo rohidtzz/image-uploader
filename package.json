@@ -6,7 +6,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "up": "pm2 start index.js --name storage-api",
+    "down": "pm2 stop storage-api"
   },
   "author": "iya ini rohidtzz",
   "license": "ISC",
