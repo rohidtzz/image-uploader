@@ -219,7 +219,7 @@ app.get('/docs', (req, res) => {
   <div class="card">
     <h3>POST /upload</h3>
     <p>Upload file via API. Gunakan <code>multipart/form-data</code> dengan field name <code>file</code>.</p>
-    <pre><code>curl -F "file=@foto.jpg" https://your-domain/upload</code></pre>
+    <pre><code>curl -F "file=@foto.jpg" https://img.rohidtzz.me/upload</code></pre>
     <p><strong>Response 201:</strong></p>
     <pre><code>{
   "ok": true,
@@ -237,7 +237,7 @@ app.get('/docs', (req, res) => {
   <div class="card">
     <h3>GET /upload</h3>
     <p>List semua file yang sudah diupload dalam format JSON.</p>
-    <pre><code>curl https://your-domain/upload</code></pre>
+    <pre><code>curl https://img.rohidtzz.me/upload</code></pre>
     <p><strong>Response 200:</strong></p>
     <pre><code>{
   "ok": true,
