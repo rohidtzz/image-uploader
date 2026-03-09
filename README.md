@@ -87,7 +87,9 @@ Buka tab **Access Policy** pada bucket tersebut, tempel policy berikut:
 
 #### 3c. Buat service account (jangan pakai root di production)
 
-Buka **Access Keys** → **Create access key** di MinIO Console, lalu beri policy berikut agar hanya bisa upload/list ke prefix `upload/public/`:
+Buka **Access Keys** → **Create access key** di MinIO Console. buat acess key secret key nya lalu simpan, lalu klik edit access kye itu, akan muncul modal form, ada bagian **"Access Key Policy"** — tempel inline policy di situ langsung dan simpan.
+
+Policy yang dibutuhkan (ganti `public` dengan nama bucket Anda):
 
 ```json
 {
@@ -96,17 +98,17 @@ Buka **Access Keys** → **Create access key** di MinIO Console, lalu beri polic
         {
             "Effect": "Allow",
             "Action": ["s3:PutObject"],
-            "Resource": ["arn:aws:s3:::mybucket/upload/public/*"]
+            "Resource": ["arn:aws:s3:::public/upload/public/*"]
         },
         {
             "Effect": "Allow",
             "Action": ["s3:GetBucketLocation"],
-            "Resource": ["arn:aws:s3:::mybucket"]
+            "Resource": ["arn:aws:s3:::public"]
         },
         {
             "Effect": "Allow",
             "Action": ["s3:ListBucket"],
-            "Resource": ["arn:aws:s3:::mybucket"],
+            "Resource": ["arn:aws:s3:::public"],
             "Condition": {
                 "StringEquals": {
                     "s3:prefix": ["upload/public"]
@@ -117,14 +119,15 @@ Buka **Access Keys** → **Create access key** di MinIO Console, lalu beri polic
 }
 ```
 
+> **Penting:** `s3:PutObject` wajib ada — tanpa ini upload akan gagal `403`.
+> Service account ini tidak bisa delete, tidak bisa akses bucket lain, tidak bisa akses prefix di luar `upload/public/`.
+
 Salin **Access Key** dan **Secret Key** yang dihasilkan, masukkan ke `.env`:
 
 ```dotenv
 AWS_ACCESS_KEY_ID=<access-key-dari-minio>
 AWS_SECRET_ACCESS_KEY=<secret-key-dari-minio>
 ```
-
-> Service account ini tidak bisa delete, tidak bisa akses bucket lain, dan tidak bisa akses prefix di luar `upload/public/`.
 
 ### 4. Konfigurasi `.env`
 

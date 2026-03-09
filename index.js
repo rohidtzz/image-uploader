@@ -57,43 +57,53 @@ const uploadRateLimit = rateLimit({
   message: { error: 'Too many uploads from this IP, please try again after 1 hour.' },
 });
 
-// GET / — simple HTML image gallery
+// GET / — file gallery (images + PDFs)
 app.get('/', async (req, res, next) => {
   try {
     const { list } = await import('#services/storage.js');
     const files = await list();
 
     const imageExts = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.avif']);
-    const images = files.filter(f => imageExts.has(f.key.slice(f.key.lastIndexOf('.')).toLowerCase()));
+    const allowed = files.filter(f => {
+      const ext = f.key.slice(f.key.lastIndexOf('.')).toLowerCase();
+      return imageExts.has(ext) || ext === '.pdf';
+    });
 
-    const cards = images.length
-      ? images.map(({ key, url }) => `
-        <div class="card">
-          <img src="${url}" alt="${key}" loading="lazy" />
-          <a href="${url}" target="_blank" title="${key}">${key.split('/').pop()}</a>
-        </div>`).join('')
-      : '<p class="empty">No images uploaded yet.</p>';
+    const rows = allowed.length
+      ? allowed.map(({ key, url }) => {
+          const ext = key.slice(key.lastIndexOf('.')).toLowerCase();
+          const icon = ext === '.pdf' ? '📄' : '🖼️';
+          const name = key.split('/').pop();
+          return `<tr><td>${icon}</td><td><a href="${url}" target="_blank">${key}</a></td><td>${name.slice(name.lastIndexOf('.') + 1).toUpperCase()}</td></tr>`;
+        }).join('')
+      : '<tr><td colspan="3" class="empty">No files uploaded yet.</td></tr>';
 
     res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Image Gallery</title>
+  <title>File Gallery</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: sans-serif; background: #f4f4f5; color: #18181b; padding: 2rem; }
     h1 { margin-bottom: 1.5rem; font-size: 1.5rem; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
-    .card { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
-    .card img { width: 100%; height: 160px; object-fit: cover; display: block; }
-    .card a { display: block; padding: .5rem .75rem; font-size: .75rem; color: #6366f1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .empty { color: #71717a; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+    th { background: #e4e4e7; padding: .6rem 1rem; text-align: left; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; }
+    td { padding: .6rem 1rem; border-top: 1px solid #f1f1f1; font-size: .875rem; }
+    td:first-child { width: 2rem; text-align: center; }
+    td:last-child { width: 4rem; color: #71717a; font-size: .75rem; }
+    a { color: #6366f1; text-decoration: none; word-break: break-all; }
+    a:hover { text-decoration: underline; }
+    .empty { text-align: center; padding: 2rem; color: #71717a; }
   </style>
 </head>
 <body>
-  <h1>Image Gallery (${images.length})</h1>
-  <div class="grid">${cards}</div>
+  <h1>Files (${allowed.length})</h1>
+  <table>
+    <thead><tr><th></th><th>Key</th><th>Type</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
 </body>
 </html>`);
   } catch (err) {
