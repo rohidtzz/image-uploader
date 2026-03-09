@@ -12,6 +12,8 @@ src/
     errorHandler.js   ← centralized error handler
   services/
     storage.js        ← upload(), list()
+  logs/
+    .gitkeep          ← folder log (isi di-gitignore)
 .env
 .env.example
 ```
@@ -38,13 +40,17 @@ docker run -d \
 
 Buka MinIO Console: http://localhost:9001
 
-### 3. Buat bucket
+### 3. Buat bucket & access policy
+
+#### 3a. Buat bucket
 
 Di MinIO Console (http://localhost:9001):
-1. Login dengan `minioadmin` / `minioadmin`
+1. Login dengan credentials root
 2. Buat bucket baru, contoh: `mybucket`
-3. Buka tab **Access Policy** pada bucket tersebut
-4. Tempel policy berikut:
+
+#### 3b. Set bucket policy (public read)
+
+Buka tab **Access Policy** pada bucket tersebut, tempel policy berikut:
 
 ```json
 {
@@ -77,7 +83,48 @@ Di MinIO Console (http://localhost:9001):
 }
 ```
 
-> Ganti `mybucket` dengan nama bucket Anda yang sebenarnya.
+> Ganti `mybucket` dengan nama bucket Anda.
+
+#### 3c. Buat service account (jangan pakai root di production)
+
+Buka **Access Keys** → **Create access key** di MinIO Console, lalu beri policy berikut agar hanya bisa upload/list ke prefix `upload/public/`:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": ["s3:PutObject"],
+            "Resource": ["arn:aws:s3:::mybucket/upload/public/*"]
+        },
+        {
+            "Effect": "Allow",
+            "Action": ["s3:GetBucketLocation"],
+            "Resource": ["arn:aws:s3:::mybucket"]
+        },
+        {
+            "Effect": "Allow",
+            "Action": ["s3:ListBucket"],
+            "Resource": ["arn:aws:s3:::mybucket"],
+            "Condition": {
+                "StringEquals": {
+                    "s3:prefix": ["upload/public"]
+                }
+            }
+        }
+    ]
+}
+```
+
+Salin **Access Key** dan **Secret Key** yang dihasilkan, masukkan ke `.env`:
+
+```dotenv
+AWS_ACCESS_KEY_ID=<access-key-dari-minio>
+AWS_SECRET_ACCESS_KEY=<secret-key-dari-minio>
+```
+
+> Service account ini tidak bisa delete, tidak bisa akses bucket lain, dan tidak bisa akses prefix di luar `upload/public/`.
 
 ### 4. Konfigurasi `.env`
 
@@ -95,13 +142,12 @@ PORT=3000
 MAX_FILE_SIZE=10485760
 ALLOWED_TYPES=
 
-AWS_ACCESS_KEY_ID=minioadmin
-AWS_SECRET_ACCESS_KEY=minioadmin
+AWS_ACCESS_KEY_ID=<access-key-dari-minio>
+AWS_SECRET_ACCESS_KEY=<secret-key-dari-minio>
 AWS_REGION=us-east-1
 AWS_BUCKET=mybucket
 AWS_FORCE_PATH_STYLE=true
 AWS_ENDPOINT=http://localhost:9000
-AWS_PUBLIC_URL=http://localhost:9000/mybucket
 ```
 
 ### 5. Jalankan server
@@ -114,6 +160,12 @@ npm start       # production
 ---
 
 ## API
+
+### `GET /`
+
+Gallery HTML — menampilkan semua gambar yang sudah diupload.
+
+---
 
 ### `POST /upload`
 
@@ -183,4 +235,4 @@ ALLOWED_TYPES=image/jpeg,image/png,image/webp,image/gif
 
 ## Rate Limiting
 
-100 request per 15 menit per IP. Error `429` jika terlampaui.
+5 request upload per jam per IP. Error `429` jika terlampaui. GET `/` dan GET `/upload` tidak terkena limit.
