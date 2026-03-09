@@ -45,7 +45,7 @@ export const upload = async (buffer, originalName, mimeType = 'application/octet
 export const list = async () => {
   const data = await s3.send(new ListObjectsV2Command({
     Bucket: BUCKET,
-    Prefix: 'upload/public/',
+    Prefix: 'upload/public',
   }));
 
   return (data.Contents ?? []).map((obj) => ({
