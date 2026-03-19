@@ -219,7 +219,7 @@ app.get('/docs', (req, res) => {
   <div class="card">
     <h3>POST /upload</h3>
     <p>Upload file via API. Gunakan <code>multipart/form-data</code> dengan field name <code>file</code>.</p>
-    <pre><code>curl -F "file=@foto.jpg" https://img.rohidtzz.me/upload</code></pre>
+    <pre><code>curl -F "file=@foto.jpg" https://img.rohidtzz.my.id/upload</code></pre>
     <p><strong>Response 201:</strong></p>
     <pre><code>{
   "ok": true,
@@ -228,7 +228,7 @@ app.get('/docs', (req, res) => {
     "type": "image/jpeg",
     "size": 204800,
     "key": "upload/public/a1b2c3.jpg",
-    "url": "https://cdn.example.com/public/upload/public/a1b2c3.jpg"
+    "url": "https://rohidtzz.my.id/public/upload/public/a1b2c3.jpg"
   }
 }</code></pre>
     <p style="margin-top:.75rem;font-size:.82rem;color:#71717a">Rate limit: 5 request per jam per IP. Response <code>429</code> jika terlampaui.</p>
@@ -237,7 +237,7 @@ app.get('/docs', (req, res) => {
   <div class="card">
     <h3>GET /upload</h3>
     <p>List semua file yang sudah diupload dalam format JSON.</p>
-    <pre><code>curl https://img.rohidtzz.me/upload</code></pre>
+    <pre><code>curl https://img.rohidtzz.my.id/upload</code></pre>
     <p><strong>Response 200:</strong></p>
     <pre><code>{
   "ok": true,
@@ -245,23 +245,12 @@ app.get('/docs', (req, res) => {
   "files": [
     {
       "key": "upload/public/a1b2c3.jpg",
-      "url": "https://cdn.example.com/public/upload/public/a1b2c3.jpg",
+      "url": "https://rohidtzz.my.id/public/upload/public/a1b2c3.jpg",
       "size": 204800,
       "lastModified": "2026-03-09T10:00:00.000Z"
     }
   ]
 }</code></pre>
-  </div>
-
-  <h2>Konfigurasi</h2>
-  <div class="card">
-    <table>
-      <thead><tr><th>Variabel</th><th>Default</th><th>Keterangan</th></tr></thead>
-      <tbody>
-        <tr><td><code>MAX_FILE_SIZE</code></td><td><code>10485760</code></td><td>Maks ukuran file (bytes). Default 10MB.</td></tr>
-        <tr><td><code>ALLOWED_TYPES</code></td><td><em>kosong</em></td><td>MIME types diizinkan, pisah koma. Kosong = semua.</td></tr>
-      </tbody>
-    </table>
   </div>
   </main>
 </body>
